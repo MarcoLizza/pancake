@@ -134,7 +134,7 @@ local function find_nearest_color_index(r, g, b, colors)
     local d = dr * dr + dg * dg + db * db
     if delta > d then
       delta = d
-      i = index - i
+      i = index - 1
     end
   end
   return i
