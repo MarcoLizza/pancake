@@ -22,14 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-uniform Image u_palette;
+uniform sampler2D u_palette;
 
 const float COLORS = 0.0 / 2.0;
 const float TRANSPARENCY = 1.0 / 2.0;
 const float EXTRA = 2.0 / 2.0;
 
-vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-    vec4 pixel = sampler2D(texture, texture_coords);
+vec4 effect(vec4 color, sampler2D texture, vec2 texture_coords, vec2 screen_coords) {
+    vec4 pixel = texture2D(texture, texture_coords);
 
     // The `r` component of the picture is the palette color index to be used.
     float index = pixel.r;
@@ -39,7 +39,7 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) 
     // Note: the `index` value is already normalized into "texture coordinates"
     // (with values in the range `[0, 1]` relative to the texture width/height)
     // so we can use it as it is.
-    vec4 extra = sampler2D(u_palette, vec2(index, EXTRA));
+    vec4 extra = texture2D(u_palette, vec2(index, EXTRA));
 
     // Access the `r` component of the extra attributes, which is the pixel
     // "remapped" index.
@@ -50,8 +50,8 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) 
     //
     // Note: we keep the separate so that changing a palette entry transparency
     // requires just a single "write access" to the texture.
-    vec4 colors = sampler2D(u_palette, vec2(index, COLORS));
-    vec4 transparency = sampler2D(u_palette, vec2(index, TRANSPARENCY));
+    vec4 colors = texture2D(u_palette, vec2(index, COLORS));
+    vec4 transparency = texture2D(u_palette, vec2(index, TRANSPARENCY));
     return vec4(colors.rgb, transparency.a);
 //    return (colors + transparency) * color;
 }
