@@ -56,8 +56,7 @@ function Game:__ctor()
   self.running = false
   self.static = false
 
-  -- FIXME: pass RGB888 colors!
-  local index = self.palette:match(0.0, 0.89411764705882, 0.21176470588235)
+  local index = self.palette:match(0, 228, 54)
   self.palette:set_transparent(index, true)
 
   local Bunny = self.static and StaticBunny or MovingBunny

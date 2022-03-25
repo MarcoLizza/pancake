@@ -1,8 +1,6 @@
 -- ARNE16 - Arne Palette v20
 -- https://androidarts.com/palette/16pal.htm
-local Colors = require('lib/graphics/colors')
-
-return Colors.normalize({
+return {
   {   0,   0,   0 }, -- VOID
   { 157, 157, 157 }, -- GRAY
   { 255, 255, 255 }, -- WHITE
@@ -19,4 +17,4 @@ return Colors.normalize({
   {   0,  87, 132 }, -- SEABLUE
   {  49, 162, 242 }, -- SKYBLUE
   { 178, 220, 239 }  -- CLOUDBLUE
-})
+}

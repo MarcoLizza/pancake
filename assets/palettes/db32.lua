@@ -1,8 +1,6 @@
 -- DB32 - DawnBringer's 32 Col Palette V1.0
 -- http://pixeljoint.com/forum/forum_posts.asp?TID=16247
-local Colors = require('lib/graphics/colors')
-
-return Colors.normalize({
+return {
   {   0,   0,   0 },
   {  34,  32,  52 },
   {  69,  40,  60 },
@@ -35,4 +33,4 @@ return Colors.normalize({
   { 215, 123, 186 },
   { 143, 151,  74 },
   { 138, 111,  48 }
-})
+}

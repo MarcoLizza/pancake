@@ -63,6 +63,14 @@ local function _to_texture_space(x, width)
   return u
 end
 
+local function _to_texture_color(r8, g8, b8)
+  return r8 / 255.0, g8 / 255.0, b8 / 255.0
+end
+
+local function _from_texture_color(r, g, b)
+  return math.floor(r * 255.0 + 0.5), math.floor(g * 255.0 + 0.5), math.floor(b * 255.0 + 0.5)
+end
+
 function Palette.new(...)
   local self = setmetatable({}, Palette)
   if self.__ctor then
@@ -79,7 +87,7 @@ function create_palette(colors)
 
   for index, color in ipairs(colors) do
     local x = index - 1
-    local r, g, b = unpack(color)
+    local r, g, b = _to_texture_color(unpack(color))
     local s = _to_texture_space(x, 256)
     image:setPixel(x, 0, r, g, b, 0.0) -- Components
     image:setPixel(x, 1, 0, 0, 0, 1.0) -- Transparency
@@ -98,7 +106,10 @@ function Palette:__ctor(colors)
   self.shader:send("u_palette", self.texture)
 end
 
-function Palette:set_color(index, r, g, b)
+function Palette:set_color(index, r8, g8, b8)
+  self.colors[index + 1] = { r8, g8,  b8 }
+
+  local r, g, b = _to_texture_color(r8, g8, b8)
   self.image:setPixel(index, 0, r, g, b, 0.0)
   self.texture:replacePixels(self.image)
 end
@@ -121,29 +132,10 @@ function Palette:render_with(callback)
   self.shader:deactivate()
 end
 
-local function find_nearest_color_index(r, g, b, colors)
-  local unpack = unpack or table.unpack -- compatibility w/ 5.2 and later.
-
-  local i = -1
-  local delta = math.huge
-  for index, color in ipairs(colors) do
-    local ri, gi, bi = unpack(color)
-    local dr = r - ri
-    local dg = g - gi
-    local db = b - bi
-    local d = dr * dr + dg * dg + db * db
-    if delta > d then
-      delta = d
-      i = index - 1
-    end
-  end
-  return i
-end
-
 function Palette:load_image(filename)
   local data = love.image.newImageData(filename)
   local pixel_function = function(x, y, r, g, b, a)
-      local index = find_nearest_color_index(r, g, b, self.colors)
+      local index = self:match(_from_texture_color(r, g, b))
       local u = _to_texture_space(index, 256)
       --print(r, g, b, index, u)
       return u, 0, 0, 0
@@ -152,8 +144,23 @@ function Palette:load_image(filename)
   return love.graphics.newImage(data)
 end
 
-function Palette:match(r, g, b)
-  return find_nearest_color_index(r, g, b, self.colors)
+function Palette:match(r8, g8, b8)
+  local unpack = unpack or table.unpack -- compatibility w/ 5.2 and later.
+
+  local i = -1
+  local max_delta = math.huge
+  for index, color in ipairs(self.colors) do
+    local r, g, b = unpack(color)
+    local delta_r = r8 - r
+    local delta_g = g8 - g
+    local delta_b = b8 - b
+    local delta = delta_r * delta_r + delta_g * delta_g + delta_b * delta_b
+    if max_delta > delta then
+      max_delta = delta
+      i = index - 1
+    end
+  end
+  return i
 end
 
 function Palette.index_to_rgba(index)

@@ -1,8 +1,6 @@
 -- NES 64 colors palette
 -- http://www.thealmightyguru.com/Games/Hacking/Wiki/index.php?title=NES_Palette
-local Colors = require('lib/graphics/colors')
-
-return Colors.normalize({
+return {
   { 124, 124, 124 },
   {   0,   0, 252 },
   {   0,   0, 188 },
@@ -67,4 +65,4 @@ return Colors.normalize({
   { 248, 216, 248 },
   {   0,   0,   0 },
   {   0,   0,   0 }
-})
+}

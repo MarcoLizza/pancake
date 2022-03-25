@@ -1,8 +1,6 @@
 -- PICO-8 color palette v0.1.8
 -- https://www.romanzolotarev.com/pico-8-color-palette/
-local Colors = require('lib/graphics/colors')
-
-return Colors.normalize({
+return {
   {   0,   0,   0 }, --  black
   {  29,  43,  83 }, --  dark-blue
   { 126,  37,  83 }, --  dark-purple
@@ -19,4 +17,4 @@ return Colors.normalize({
   { 131, 118, 156 }, --  indigo
   { 255, 119, 168 }, --  pink
   { 255, 204, 170 }  --  peach
-})
+}

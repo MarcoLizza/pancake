@@ -1,8 +1,6 @@
 -- DB16 - DawnBringer's 16 Col Palette v1.0
 -- http://pixeljoint.com/forum/forum_posts.asp?TID=12795
-local Colors = require('lib/graphics/colors')
-
-return Colors.normalize({
+return {
   {  20,  12,  28 },
   {  68,  36,  52 },
   {  48,  52, 109 },
@@ -19,4 +17,4 @@ return Colors.normalize({
   { 109, 194, 202 },
   { 218, 212,  94 },
   { 222, 238, 214 }
-})
+}

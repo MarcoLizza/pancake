@@ -1,8 +1,6 @@
 -- Eroge Copper
 -- https://lospec.com/palette-list/eroge-copper
-local Colors = require('lib/graphics/colors')
-
-return Colors.normalize({
+return {
   { 0x0d, 0x08, 0x0d },
   { 0x4f, 0x2b, 0x24 },
   { 0x82, 0x5b, 0x31 },
@@ -19,4 +17,4 @@ return Colors.normalize({
   { 0x7d, 0x38, 0x40 },
   { 0xc1, 0x6c, 0x5b },
   { 0xe8, 0x99, 0x73 }
-})
+}

@@ -1,6 +1,4 @@
-local Colors = require('lib/graphics/colors')
-
-return Colors.normalize({
+return {
   {   0,   0,   0 },
   {   0,   0,  85 },
   {   0,   0, 170 },
@@ -65,4 +63,4 @@ return Colors.normalize({
   { 255, 255,  85 },
   { 255, 255, 170 },
   { 255, 255, 255 },
-})
+}
