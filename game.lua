@@ -48,52 +48,60 @@ function Game.new(...)
   return self
 end
 
-local function create_image(width, height, step, colors)
-  local canvas = love.graphics.newCanvas(width, height)
-
-  local count = #colors
-
-  love.graphics.setCanvas(canvas)
-
-  local index = 0
-  for y = 0, height - step, step do
-    for x = 0, width - step, step do
-      love.graphics.setColor(Palette.index_to_rgba(index))
-      love.graphics.rectangle("fill", x, y, step, step)
-      index = (index + 1) % count
-    end
-  end
-
-  love.graphics.setCanvas()
-
-  return love.graphics.newImage(canvas:newImageData())
-end
-
 function Game:__ctor()
   self.palette = Palette.new(COLORS)
-  self.objects = {
-    { image = create_image(128, 128, 16, COLORS), x = 32, y = 32 },
-    { image = self.palette:load_image("assets/images/logo.png"), x = 256, y = 32 }
-  }
-  self.index = self.palette:match(255, 0, 0)
-  self.amount = 0
+  self.bank = self.palette:load_image("assets/images/sheet.png")
+  self.bunnies = {}
+  self.speed = 1.0
+  self.running = false
+  self.static = false
+
+  -- FIXME: pass RGB888 colors!
+  local index = self.palette:match(0.0, 0.89411764705882, 0.21176470588235)
+  self.palette:set_transparent(index, true)
+
+  local Bunny = self.static and StaticBunny or MovingBunny
+  for _ = 1, INITIAL_BUNNIES do
+    table.insert(self.bunnies, Bunny.new(self.bank, WIDTH, HEIGHT))
+  end
 end
 
 function Game:update(dt)
+  if not self.running then
+    return
+  end
+
+  for _, bunny in ipairs(self.bunnies) do
+    bunny:update(dt * self.speed)
+  end
 end
 
 function Game:draw()
   self.palette:render_with(function()
-    for _, object in ipairs(self.objects) do
-      love.graphics.draw(object.image, object.x, object.y)
+    for _, bunny in ipairs(self.bunnies) do
+      bunny:draw()
     end
   end)
 end
 
 function Game:on_key_pressed(key, scancode, isrepeat)
   if key == 'f1' then
-    self.amount = self.amount + 1
-    self.palette:set_shift(self.index, self.amount)
+    local Bunny = self.static and StaticBunny or MovingBunny
+    for _ = 1, LITTER_SIZE do
+      table.insert(self.bunnies, Bunny.new(self.bank, WIDTH, HEIGHT))
+    end
+  elseif key == 'f2' then
+    self.bunnies = {}
+  elseif key == 'left' then
+    self.speed = self.speed * 0.5
+  elseif key == 'right' then
+    self.speed = self.speed * 2.0
+  elseif key == 'down' then
+    self.speed = 1.0
+  elseif key == 'space' then
+    self.static = not self.static
+  elseif key == 'p' then
+    self.running = not self.running
   end
 end
 
