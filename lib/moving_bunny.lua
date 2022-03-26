@@ -22,11 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]]--
 
-local MAX_SPEED = 500
-local GRAVITY = 981
-local X_DAMPENING = 0.95
-local Y_DAMPENING = 0.85
-
 local Bunny = {}
 
 Bunny.__index = Bunny
@@ -39,18 +34,16 @@ function Bunny.new(...)
   return self
 end
 
-function Bunny:__ctor(bank, width, height)
+function Bunny:__ctor(bank, bounds)
   local cw, ch = bank:getWidth(), bank:getHeight()
 
-  self.min_x = 0
-  self.min_y = 0
-  self.max_x = width - cw
-  self.max_y = height - ch
+  self.bounds = bounds
+  self.gravity = 30
 
-  self.x = (self.max_x - self.min_x) / 2 -- Spawn in the top-center part of the screen.
-  self.y = (self.max_y - self.min_y) / 8
-  self.vx = (math.random() * MAX_SPEED) - (MAX_SPEED * 0.5)
-  self.vy = (math.random() * MAX_SPEED) - (MAX_SPEED * 0.5)
+  self.x = (bounds.right - bounds.left) / 2 -- Spawn in the top-center part of the screen.
+  self.y = (bounds.bottom - bounds.top) / 8
+  self.vx = math.random() * 200 - 100
+  self.vy = math.random() * 200 - 100
 
   self.bank = bank
 end
@@ -59,27 +52,25 @@ function Bunny:update(delta_time)
   self.x = self.x + self.vx * delta_time
   self.y = self.y + self.vy * delta_time
 
-  self.vy = self.vy + GRAVITY * delta_time
+  self.vy = self.vy + self.gravity
 
-  if self.x > self.max_x then
-    self.vx = self.vx * X_DAMPENING * -1.0
-    self.x = self.max_x
-  elseif self.x < self.min_x then
-    self.vx = self.vx * X_DAMPENING * -1.0
-    self.x = self.min_x
+  if self.x > self.bounds.right then
+    self.vx = -self.vx
+    self.x = self.bounds.right
+  elseif self.x < self.bounds.left then
+    self.vx = -self.vx
+    self.x = self.bounds.left
   end
 
-  if self.y > self.max_y then
-    self.vy = self.vy * Y_DAMPENING * -1.0
-    self.y = self.max_y
-
-    if math.abs(self.vy) <= 400.0 and math.random() <= 0.10 then  -- Jump, occasionally!
-      self.vx = self.vx - ((math.random() * 100.0) - 50.0)
-      self.vy = self.vy - ((math.random() * 500.0) + 250.0)
+  if self.y > self.bounds.bottom then
+    self.vy = self.vy * -0.85
+    self.y = self.bounds.bottom
+    if math.random() > 0.5 then
+      self.vy = self.vy - math.random() * 200
     end
-  elseif self.y < self.min_y then
-    self.vy = 0.0 -- Bump on the ceiling!
-    self.y = self.min_y
+  elseif self.y < self.bounds.top then
+    self.vy = 0
+    self.y = self.bounds.top
   end
 end
 

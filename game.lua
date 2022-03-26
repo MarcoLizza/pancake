@@ -27,18 +27,16 @@ local Palette = require("lib/palette")
 local MovingBunny = require("lib/moving_bunny")
 local StaticBunny = require("lib/static_bunny")
 
-local INITIAL_BUNNIES = 15000
+local INITIAL_BUNNIES = 32768
 local LITTER_SIZE = 250
 local MAX_BUNNIES = 32768
-
-local WIDTH, HEIGHT = 512, 512
 
 local Game = {}
 
 Game.__index = Game
 
 --local COLORS = require('assets/palettes/arne16')
-local COLORS = require('assets/palettes/sms')
+local COLORS = require('assets/palettes/pico8')
 
 function Game.new(...)
   local self = setmetatable({}, Game)
@@ -48,20 +46,31 @@ function Game.new(...)
   return self
 end
 
+local function _get_bounds(image)
+  local width, height = image:getWidth(), image:getHeight()
+  return {
+      left = 0,
+      right = love.graphics.getWidth() - width,
+      top = 0,
+      bottom = love.graphics.getHeight() - height
+  }
+end
+
 function Game:__ctor()
   self.palette = Palette.new(COLORS)
   self.bank = self.palette:load_image("assets/images/sheet.png")
   self.bunnies = {}
   self.speed = 1.0
-  self.running = false
+  self.running = true
   self.static = false
+  self.bounds = _get_bounds(self.bank)
 
   local index = self.palette:match(0, 228, 54)
   self.palette:set_transparent(index, true)
 
   local Bunny = self.static and StaticBunny or MovingBunny
   for _ = 1, INITIAL_BUNNIES do
-    table.insert(self.bunnies, Bunny.new(self.bank, WIDTH, HEIGHT))
+    table.insert(self.bunnies, Bunny.new(self.bank, self.bounds))
   end
 end
 
@@ -81,13 +90,15 @@ function Game:draw()
       bunny:draw()
     end
   end)
+
+  love.graphics.print(string.format("%d bunnies", #self.bunnies), 0, 16)
 end
 
 function Game:on_key_pressed(key, scancode, isrepeat)
   if key == 'f1' then
     local Bunny = self.static and StaticBunny or MovingBunny
     for _ = 1, LITTER_SIZE do
-      table.insert(self.bunnies, Bunny.new(self.bank, WIDTH, HEIGHT))
+      table.insert(self.bunnies, Bunny.new(self.bank, self.bounds))
     end
   elseif key == 'f2' then
     self.bunnies = {}
