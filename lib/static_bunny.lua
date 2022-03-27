@@ -34,25 +34,16 @@ function Bunny.new(...)
   return self
 end
 
-function Bunny:__ctor(bank, width, height)
-  local cw, ch = bank:getWidth(), bank:getHeight()
-
-  local min_x = cw
-  local min_y = cw
-  local max_x = width - cw * 2
-  local max_y = height - ch * 2
-
-  self.x = math.random() * (max_x - min_x) + cw
-  self.y = math.random() * (max_y - min_y) + ch
-
-  self.bank = bank
+function Bunny:__ctor(bounds)
+  self.x = math.random() * (bounds.right - bounds.left)
+  self.y = math.random() * (bounds.bottom - bounds.top)
 end
 
 function Bunny:update(_)
 end
 
-function Bunny:draw()
-  love.graphics.draw(self.bank, self.x, self.y)
+function Bunny:get_position()
+  return self.x, self.y
 end
 
 return Bunny

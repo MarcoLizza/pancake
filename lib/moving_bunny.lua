@@ -34,9 +34,7 @@ function Bunny.new(...)
   return self
 end
 
-function Bunny:__ctor(bank, bounds)
-  local cw, ch = bank:getWidth(), bank:getHeight()
-
+function Bunny:__ctor(bounds)
   self.bounds = bounds
   self.gravity = 30
 
@@ -44,8 +42,6 @@ function Bunny:__ctor(bank, bounds)
   self.y = (bounds.bottom - bounds.top) / 8
   self.vx = math.random() * 200 - 100
   self.vy = math.random() * 200 - 100
-
-  self.bank = bank
 end
 
 function Bunny:update(delta_time)
@@ -74,8 +70,8 @@ function Bunny:update(delta_time)
   end
 end
 
-function Bunny:draw()
-  love.graphics.draw(self.bank, self.x, self.y)
+function Bunny:get_position()
+  return self.x, self.y
 end
 
 return Bunny

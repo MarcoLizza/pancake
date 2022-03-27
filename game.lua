@@ -59,6 +59,8 @@ end
 function Game:__ctor()
   self.palette = Palette.new(COLORS)
   self.bank = self.palette:load_image("assets/images/sheet.png")
+  self.batch = love.graphics.newSpriteBatch(self.bank, 50000)
+  self.quad = love.graphics.newQuad(0,  0,  32, 32, self.bank:getDimensions())
   self.bunnies = {}
   self.speed = 1.0
   self.running = true
@@ -70,7 +72,7 @@ function Game:__ctor()
 
   local Bunny = self.static and StaticBunny or MovingBunny
   for _ = 1, INITIAL_BUNNIES do
-    table.insert(self.bunnies, Bunny.new(self.bank, self.bounds))
+    table.insert(self.bunnies, Bunny.new(self.bounds))
   end
 end
 
@@ -85,10 +87,15 @@ function Game:update(dt)
 end
 
 function Game:draw()
+  local batch = self.batch
+  local quad = self.quad
   self.palette:render_with(function()
+    batch:clear()
     for _, bunny in ipairs(self.bunnies) do
-      bunny:draw()
+      local x, y = bunny:get_position()
+      batch:add(quad, x, y)
     end
+    love.graphics.draw(batch)
   end)
 
   love.graphics.print(string.format("%d bunnies", #self.bunnies), 0, 16)
@@ -98,7 +105,7 @@ function Game:on_key_pressed(key, scancode, isrepeat)
   if key == 'f1' then
     local Bunny = self.static and StaticBunny or MovingBunny
     for _ = 1, LITTER_SIZE do
-      table.insert(self.bunnies, Bunny.new(self.bank, self.bounds))
+      table.insert(self.bunnies, Bunny.new(self.bounds))
     end
   elseif key == 'f2' then
     self.bunnies = {}
