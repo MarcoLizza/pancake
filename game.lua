@@ -60,7 +60,7 @@ function Game:__ctor()
   self.palette = Palette.new(COLORS)
   self.bank = self.palette:load_image("assets/images/sheet.png")
   self.batch = love.graphics.newSpriteBatch(self.bank, 50000)
-  self.quad = love.graphics.newQuad(0,  0,  32, 32, self.bank:getDimensions())
+  self.quad = love.graphics.newQuad(0,  0,  26, 37, self.bank:getDimensions())
   self.bunnies = {}
   self.speed = 1.0
   self.running = true
