@@ -51,7 +51,7 @@ function Bunny:update(delta_time)
   self.x = self.x + self.vx * delta_time
   self.y = self.y + self.vy * delta_time
 
-  self.vy = self.vy + self.gravity
+  self.vy = self.vy + self.gravity * delta_time
 
   if self.x > self.bounds.right then
     self.vx = -self.vx
