@@ -39,15 +39,20 @@ function Bunny:__ctor(bounds, batch, quad)
   self.batch = batch
   self.quad = quad
 
-  self.gravity = 30
+  self.gravity = 500
 
   self.x = (bounds.right - bounds.left) / 2 -- Spawn in the top-center part of the screen.
   self.y = (bounds.bottom - bounds.top) / 8
-  self.vx = math.random() * 200 - 100
-  self.vy = math.random() * 200 - 100
+  self.vx = math.random() * 250 - 100
+  self.vy = math.random() * 250 - 100
+
+  self.age = 0
+  self.speed = math.random() * 5.0 - 2.5
 end
 
 function Bunny:update(delta_time)
+  self.age = self.age + delta_time
+
   self.x = self.x + self.vx * delta_time
   self.y = self.y + self.vy * delta_time
 
@@ -65,7 +70,7 @@ function Bunny:update(delta_time)
     self.vy = self.vy * -0.85
     self.y = self.bounds.bottom
     if math.random() > 0.5 then
-      self.vy = self.vy - math.random() * 200
+      self.vy = self.vy - math.random() * 50
     end
   elseif self.y < self.bounds.top then
     self.vy = 0
@@ -74,7 +79,7 @@ function Bunny:update(delta_time)
 end
 
 function Bunny:draw()
-  self.batch:add(self.quad, self.x, self.y)
+  self.batch:add(self.quad, self.x, self.y, self.age * self.speed)
 end
 
 return Bunny
