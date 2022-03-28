@@ -72,7 +72,7 @@ function Game:__ctor()
 
   local Bunny = self.static and StaticBunny or MovingBunny
   for _ = 1, INITIAL_BUNNIES do
-    table.insert(self.bunnies, Bunny.new(self.bounds))
+    table.insert(self.bunnies, Bunny.new(self.bounds, self.batch, self.quad))
   end
 end
 
@@ -87,15 +87,13 @@ function Game:update(dt)
 end
 
 function Game:draw()
-  local batch = self.batch
-  local quad = self.quad
+  self.batch:clear()
+  for _, bunny in ipairs(self.bunnies) do
+    bunny:draw()
+  end
+
   self.palette:render_with(function()
-    batch:clear()
-    for _, bunny in ipairs(self.bunnies) do
-      local x, y = bunny:get_position()
-      batch:add(quad, x, y)
-    end
-    love.graphics.draw(batch)
+    love.graphics.draw(self.batch)
   end)
 
   love.graphics.print(string.format("%d bunnies", #self.bunnies), 0, 16)
@@ -105,7 +103,7 @@ function Game:on_key_pressed(key, scancode, isrepeat)
   if key == 'f1' then
     local Bunny = self.static and StaticBunny or MovingBunny
     for _ = 1, LITTER_SIZE do
-      table.insert(self.bunnies, Bunny.new(self.bounds))
+      table.insert(self.bunnies, Bunny.new(self.bounds, self.batch, self.quad))
     end
   elseif key == 'f2' then
     self.bunnies = {}

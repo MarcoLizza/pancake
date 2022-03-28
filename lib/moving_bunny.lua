@@ -34,8 +34,11 @@ function Bunny.new(...)
   return self
 end
 
-function Bunny:__ctor(bounds)
+function Bunny:__ctor(bounds, batch, quad)
   self.bounds = bounds
+  self.batch = batch
+  self.quad = quad
+
   self.gravity = 30
 
   self.x = (bounds.right - bounds.left) / 2 -- Spawn in the top-center part of the screen.
@@ -70,8 +73,8 @@ function Bunny:update(delta_time)
   end
 end
 
-function Bunny:get_position()
-  return self.x, self.y
+function Bunny:draw()
+  self.batch:add(self.quad, self.x, self.y)
 end
 
 return Bunny

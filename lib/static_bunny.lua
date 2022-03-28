@@ -34,7 +34,10 @@ function Bunny.new(...)
   return self
 end
 
-function Bunny:__ctor(bounds)
+function Bunny:__ctor(bounds, batch, quad)
+  self.batch = batch
+  self.quad = quad
+
   self.x = math.random() * (bounds.right - bounds.left)
   self.y = math.random() * (bounds.bottom - bounds.top)
 end
@@ -42,8 +45,8 @@ end
 function Bunny:update(_)
 end
 
-function Bunny:get_position()
-  return self.x, self.y
+function Bunny:draw()
+  self.batch:add(self.quad, self.x, self.y)
 end
 
 return Bunny
