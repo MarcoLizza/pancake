@@ -57,7 +57,7 @@ local function _get_bounds(image)
 end
 
 function Game:__ctor()
-  self.palette = Palette.new(COLORS)
+  self.palette = Palette.new(COLORS, love.graphics.getHeight())
   self.bank = self.palette:load_image("assets/images/sheet.png")
   self.batch = love.graphics.newSpriteBatch(self.bank, 50000)
   self.quad = love.graphics.newQuad(0,  0,  26, 37, self.bank:getDimensions())

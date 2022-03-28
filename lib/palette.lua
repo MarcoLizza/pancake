@@ -79,29 +79,35 @@ function Palette.new(...)
   return self
 end
 
-function create_palette(colors)
+function create_palette(colors, scanlines)
   local unpack = unpack or table.unpack -- compatibility w/ 5.2 and later.
 
   local count = #colors
-  image = love.image.newImageData(256, 3) -- Up to 256 colors.
+  image = love.image.newImageData(256, scanlines * 3) -- Up to 256 colors.
 
   for index, color in ipairs(colors) do
     local x = index - 1
     local r, g, b = _to_texture_color(unpack(color))
     local s = _to_texture_space(x, 256)
-    image:setPixel(x, 0, r, g, b, 0.0) -- Components
-    image:setPixel(x, 1, 0, 0, 0, 1.0) -- Transparency
-    image:setPixel(x, 2, s, 0, 0, 0.0) -- Shifting
+
+    for scanline = 0, scanlines - 1 do
+      local y = scanline * 3
+      image:setPixel(x, y + 0, r, g, b, 1.0) -- Components
+      image:setPixel(x, y + 1, 0, 0, 0, 1.0) -- Transparency
+      image:setPixel(x, y + 2, s, 0, 0, 0.0) -- Shifting
+    end
   end
---  image:encode("png", "palette.png")
+  image:encode("png", "palette.png")
   return love.graphics.newImage(image), image
 end
 
-function Palette:__ctor(colors)
+function Palette:__ctor(colors, scanlines)
   self.colors = colors
+  self.scanlines = scanlines
+
   self.count = #colors
   self.shader = Shader.new("assets/shaders/palettizer.glsl")
-  self.texture, self.image = create_palette(colors)
+  self.texture, self.image = create_palette(colors, scanlines)
 
   self.shader:send("u_palette", self.texture)
 end
@@ -110,19 +116,28 @@ function Palette:set_color(index, r8, g8, b8)
   self.colors[index + 1] = { r8, g8,  b8 }
 
   local r, g, b = _to_texture_color(r8, g8, b8)
-  self.image:setPixel(index, 0, r, g, b, 0.0)
+  for scanline = 0, self.scanlines - 1 do
+    local y = scanline * 3
+    self.image:setPixel(index, y + 0, r, g, b, 0.0)
+  end
   self.texture:replacePixels(self.image)
 end
 
 function Palette:set_transparent(index, is_transparent)
   local a = is_transparent and 0.0 or 1.0
-  self.image:setPixel(index, 1, 0.0, 0.0, 0.0, a)
+  for scanline = 0, self.scanlines - 1 do
+    local y = scanline * 3
+    self.image:setPixel(index, y + 1, 0.0, 0.0, 0.0, a)
+  end
   self.texture:replacePixels(self.image)
 end
 
 function Palette:set_shift(index, to)
   local s = _to_texture_space(to % self.count, 256)
-  self.image:setPixel(index, 2, s, 0.0, 0.0, 0.0)
+  for scanline = 0, self.scanlines - 1 do
+    local y = scanline * 3
+    self.image:setPixel(index, y + 2, s, 0.0, 0.0, 0.0)
+  end
   self.texture:replacePixels(self.image)
 end
 
