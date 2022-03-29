@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]]--
 
+local Copperlist = require("lib/copperlist")
 local Palette = require("lib/palette")
 
 local MovingBunny = require("lib/moving_bunny")
@@ -58,6 +59,8 @@ end
 
 function Game:__ctor()
   self.palette = Palette.new(COLORS, love.graphics.getHeight())
+  self.copperlist = Copperlist.new(love.graphics.getWidth(), love.graphics.getHeight())
+  self.canvas = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
   self.bank = self.palette:load_image("assets/images/sheet.png")
   self.batch = love.graphics.newSpriteBatch(self.bank, 50000)
   self.quad = love.graphics.newQuad(0,  0,  26, 37, self.bank:getDimensions())
@@ -98,8 +101,15 @@ function Game:draw()
     bunny:draw()
   end
 
+  love.graphics.setCanvas(self.canvas)
+  love.graphics.clear()
   self.palette:render_with(function()
     love.graphics.draw(self.batch)
+  end)
+  love.graphics.setCanvas()
+
+  self.copperlist:render_with(function()
+    love.graphics.draw(self.canvas)
   end)
 
   love.graphics.print(string.format("%d bunnies", #self.bunnies), 0, 16)
