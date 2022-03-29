@@ -24,22 +24,29 @@ SOFTWARE.
 
 uniform sampler2D u_palette;
 
-const float COLORS = 0.0 / 2.0;
-const float TRANSPARENCY = 1.0 / 2.0;
-const float EXTRA = 2.0 / 2.0;
+// These are the offset values that are used to sample the palette in order
+// to access the color/transparency/extra attributes for the entry.
+//
+// The palette has as many columns as the number of entries in the palette, and
+// as many rows as the number scanlines of the image (multiplied by 3).
+const int COLORS = 0;
+const int TRANSPARENCY = 1;
+const int EXTRA = 2;
 
-vec4 effect(vec4 color, sampler2D texture, vec2 texture_coords, vec2 screen_coords) {
-    vec4 pixel = texture2D(texture, texture_coords);
+float to_texture_space(int scanline, int scanlines) {
+    return float(2 * scanline + 1) / float(2 * scanlines);
+}
 
-    // The `r` component of the picture is the palette color index to be used.
-    float index = pixel.r;
+vec4 get_color(float index, int scanline, int scanlines) {
+    int scanlines_by_3 = scanlines * 3;
+    int base = scanline * 3;
 
     // First we access the "extra" attributes for that color.
     //
     // Note: the `index` value is already normalized into "texture coordinates"
     // (with values in the range `[0, 1]` relative to the texture width/height)
     // so we can use it as it is.
-    vec4 extra = texture2D(u_palette, vec2(index, EXTRA));
+    vec4 extra = texture2D(u_palette, vec2(index, to_texture_space(base + EXTRA, scanlines_by_3)));
 
     // Access the `r` component of the extra attributes, which is the pixel
     // "remapped" index.
@@ -50,8 +57,15 @@ vec4 effect(vec4 color, sampler2D texture, vec2 texture_coords, vec2 screen_coor
     //
     // Note: we keep the separate so that changing a palette entry transparency
     // requires just a single "write access" to the texture.
-    vec4 colors = texture2D(u_palette, vec2(index, COLORS));
-    vec4 transparency = texture2D(u_palette, vec2(index, TRANSPARENCY));
+    vec4 colors = texture2D(u_palette, vec2(index, to_texture_space(base + COLORS, scanlines_by_3)));
+    vec4 transparency = texture2D(u_palette, vec2(index, to_texture_space(base + TRANSPARENCY, scanlines_by_3)));
     return vec4(colors.rgb, transparency.a);
-//    return (colors + transparency) * color;
+}
+
+vec4 effect(vec4 color, sampler2D texture, vec2 texture_coords, vec2 screen_position) {
+    // The `r` component of the picture is the palette color index to be used.
+    vec4 pixel = texture2D(texture, texture_coords);
+    float index = pixel.r;
+
+    return get_color(index, int(screen_position.y), int(love_ScreenSize.y));
 }

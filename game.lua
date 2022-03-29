@@ -57,7 +57,7 @@ local function _get_bounds(image)
 end
 
 function Game:__ctor()
-  self.palette = Palette.new(COLORS)
+  self.palette = Palette.new(COLORS, love.graphics.getHeight())
   self.bank = self.palette:load_image("assets/images/sheet.png")
   self.batch = love.graphics.newSpriteBatch(self.bank, 50000)
   self.quad = love.graphics.newQuad(0,  0,  26, 37, self.bank:getDimensions())
@@ -69,6 +69,12 @@ function Game:__ctor()
 
   local index = self.palette:match(0, 228, 54)
   self.palette:set_transparent(index, true)
+
+  self.palette:set_color_at(index, 255 + 0, 91,  91, 255)
+  self.palette:set_color_at(index, 255 + 2, 91, 127, 255)
+  self.palette:set_color_at(index, 255 + 4, 91, 255, 255)
+  self.palette:set_color_at(index, 255 + 6, 91, 127, 255)
+  self.palette:set_color_at(index, 255 + 8, 91,  91, 255)
 
   local Bunny = self.static and StaticBunny or MovingBunny
   for _ = 1, INITIAL_BUNNIES do
