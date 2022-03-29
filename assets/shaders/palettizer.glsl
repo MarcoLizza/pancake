@@ -38,6 +38,7 @@ float to_texture_space(int scanline, int scanlines) {
 }
 
 vec4 get_color(float index, int scanline, int scanlines) {
+    int scanlines_by_3 = scanlines * 3;
     int base = scanline * 3;
 
     // First we access the "extra" attributes for that color.
@@ -45,7 +46,7 @@ vec4 get_color(float index, int scanline, int scanlines) {
     // Note: the `index` value is already normalized into "texture coordinates"
     // (with values in the range `[0, 1]` relative to the texture width/height)
     // so we can use it as it is.
-    vec4 extra = texture2D(u_palette, vec2(to_texture_space(base + EXTRA, scanlines), index));
+    vec4 extra = texture2D(u_palette, vec2(index, to_texture_space(base + EXTRA, scanlines_by_3)));
 
     // Access the `r` component of the extra attributes, which is the pixel
     // "remapped" index.
@@ -56,8 +57,8 @@ vec4 get_color(float index, int scanline, int scanlines) {
     //
     // Note: we keep the separate so that changing a palette entry transparency
     // requires just a single "write access" to the texture.
-    vec4 colors = texture2D(u_palette, vec2(to_texture_space(base + COLORS, scanlines), index));
-    vec4 transparency = texture2D(u_palette, vec2(to_texture_space(base + TRANSPARENCY, scanlines), index));
+    vec4 colors = texture2D(u_palette, vec2(index, to_texture_space(base + COLORS, scanlines_by_3)));
+    vec4 transparency = texture2D(u_palette, vec2(index, to_texture_space(base + TRANSPARENCY, scanlines_by_3)));
     return vec4(colors.rgb, transparency.a);
 }
 

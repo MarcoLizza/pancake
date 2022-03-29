@@ -70,6 +70,12 @@ function Game:__ctor()
   local index = self.palette:match(0, 228, 54)
   self.palette:set_transparent(index, true)
 
+  self.palette:set_color_at(index, 255 + 0, 91,  91, 255)
+  self.palette:set_color_at(index, 255 + 2, 91, 127, 255)
+  self.palette:set_color_at(index, 255 + 4, 91, 255, 255)
+  self.palette:set_color_at(index, 255 + 6, 91, 127, 255)
+  self.palette:set_color_at(index, 255 + 8, 91,  91, 255)
+
   local Bunny = self.static and StaticBunny or MovingBunny
   for _ = 1, INITIAL_BUNNIES do
     table.insert(self.bunnies, Bunny.new(self.bounds, self.batch, self.quad))
