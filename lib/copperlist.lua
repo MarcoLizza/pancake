@@ -82,7 +82,7 @@ function create_copperlist(width, height)
     local v = math.sin(y / height * math.pi * 7) * 8
     ox = _to_texture_space(v, width)
     if y > LEVEL then
-      oy = _to_texture_space((y - LEVEL) * 2, height)
+      oy = _to_texture_space((LEVEL - y) * 2, height)
     end
 --    print(ox, oy)
     local r, g, b, a = 0, 0, 0, 0

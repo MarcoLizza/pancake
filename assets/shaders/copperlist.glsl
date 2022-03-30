@@ -24,18 +24,17 @@ SOFTWARE.
 
 uniform sampler2D u_copperlist;
 
+// Note: the texture origin `<0.0, 0.0>` is at the top-left corner. The texture
+// coordinates are in the range `[0.0, 1.0]` and increase downwards and to the
+// right.
 vec4 effect(vec4 color, sampler2D texture, vec2 texture_coords, vec2 screen_position) {
     vec4 attributes = texture2D(u_copperlist, vec2(0.5, texture_coords.y));
 
     // Since we can't store *negative* values in the color components, we need to
     // separate the offset in two parts: the positive value in the `r` component,
     // and the negative value in the `g` component.
-    //
-    // Also note that since the offset is applied to the texture coordinates in
-    // "reverse" mode, we need to flip the sign of the offset (i.e. the positive
-    // offset is added, and the negative offset is subtracted).
-    float dx = - attributes.r + attributes.g;
-    float dy = - attributes.b + attributes.a;
+    float dx = attributes.r - attributes.g;
+    float dy = attributes.b - attributes.a;
     vec2 uv = texture_coords + vec2(dx, dy);
 
     return texture2D(texture, uv);
