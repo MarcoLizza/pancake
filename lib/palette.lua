@@ -83,7 +83,7 @@ function create_palette(colors, scanlines)
   local unpack = unpack or table.unpack -- compatibility w/ 5.2 and later.
 
   local count = #colors
-  image = love.image.newImageData(256, scanlines * 3) -- Up to 256 colors.
+  local image = love.image.newImageData(256, scanlines * 3) -- Up to 256 colors.
 
   for index, color in ipairs(colors) do
     local x = index - 1

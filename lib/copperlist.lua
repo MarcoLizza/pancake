@@ -71,16 +71,18 @@ function Copperlist.new(...)
   return self
 end
 
+local LEVEL = 400
+
 function create_copperlist(width, height)
-  image = love.image.newImageData(1, height)
+  local image = love.image.newImageData(1, height)
 
   local half_width = width * 0.25
   for y = 0, height - 1 do
     local ox, oy = 0, 0
---    local v = math.sin(y / height * math.pi * 7) * 8
---    ox = _to_texture_space(v, width)
-    if y > 400 then
-      oy = _to_texture_space(y - 400, height)
+    local v = math.sin(y / height * math.pi * 7) * 8
+    ox = _to_texture_space(v, width)
+    if y > LEVEL then
+      oy = _to_texture_space((y - LEVEL) * 2, height)
     end
 --    print(ox, oy)
     local r, g, b, a = 0, 0, 0, 0
